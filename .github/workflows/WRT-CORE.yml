@@ -231,6 +231,9 @@ jobs:
             for PKG in luci-app-passwall2 luci-app-openclash luci-app-easytier; do
               set_package_state "$PKG" m
             done
+
+            # Normalize the final edits and refresh OpenWrt's config stamp.
+            make defconfig -j$(nproc)
           fi
 
       - name: Validate Minimal Configuration
