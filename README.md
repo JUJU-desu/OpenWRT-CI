@@ -2,7 +2,7 @@
 
 # JUJU-desu / ZN M2 定制配置
 
-当前 `QCA-ALL` 只编译兆能 M2 的无 Wi-Fi 精简固件：不包含 ath11k 无线、USB 总线/存储/网络模块、Samba4 或 HomeProxy。
+当前 `QCA-ALL` 只编译兆能 M2 的无 Wi-Fi 精简固件，使用 Argon 主题：不包含 ath11k 无线、USB 总线/存储/网络模块、Samba4 或 HomeProxy。
 
 Passwall2、OpenClash、EasyTier 使用 APK 模块包方式编译（`CONFIG_PACKAGE_*=m`），不会固化到 squashfs；构建产物中的 `.apk` 需要手动安装到 overlay，例如：
 
