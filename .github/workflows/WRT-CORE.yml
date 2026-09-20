@@ -194,48 +194,6 @@ jobs:
 
           make defconfig -j$(nproc) && make clean -j$(nproc)
 
-          if [[ "$WRT_CONFIG" == "ZN-M2-WIFI-NO" ]]; then
-            # Some target defaults are reintroduced by defconfig. Re-apply the
-            # intentionally removed packages to the final .config afterwards.
-            set_package_state() {
-              local PKG="$1"
-              local STATE="$2"
-              sed -i "/^CONFIG_PACKAGE_${PKG}=.*/d; /^# CONFIG_PACKAGE_${PKG} is not set$/d" .config
-              if [[ "$STATE" == "n" ]]; then
-                echo "# CONFIG_PACKAGE_${PKG} is not set" >> .config
-              else
-                echo "CONFIG_PACKAGE_${PKG}=${STATE}" >> .config
-              fi
-            }
-
-            for PKG in \
-              kmod-ath kmod-ath11k kmod-ath11k-ahb kmod-ath11k-pci \
-              ath11k-firmware-ipq6018 ath11k-firmware-ipq6018-ddwrt \
-              ath11k-firmware-qcn9074 ath11k-firmware-qcn9074-ddwrt \
-              ipq-wifi-zn_m2 wpad-openssl hostapd-common wpa-supplicant \
-              kmod-usb3 kmod-usb-core kmod-usb-dwc3 kmod-usb-dwc3-qcom \
-              kmod-usb-serial-qualcomm kmod-usb-audio kmod-usb-ehci \
-              kmod-usb-ohci kmod-usb-uhci kmod-usb-net kmod-usb-net-asix \
-              kmod-usb-net-asix-ax88179 kmod-usb-net-cdc-eem \
-              kmod-usb-net-cdc-ether kmod-usb-net-cdc-mbim \
-              kmod-usb-net-cdc-ncm kmod-usb-net-cdc-subset \
-              kmod-usb-net-huawei-cdc-ncm kmod-usb-net-ipheth \
-              kmod-usb-net-rndis kmod-usb-net-rtl8150 \
-              kmod-usb-net-rtl8152 kmod-usb-net-sierrawireless \
-              kmod-usb-storage kmod-usb-storage-extras kmod-usb-storage-uas \
-              usb-modeswitch usbmuxd usbutils kmod-fs-ksmbd \
-              luci-app-samba4 samba4-server samba4-client luci-app-homeproxy; do
-              set_package_state "$PKG" n
-            done
-
-            for PKG in luci-app-passwall2 luci-app-openclash luci-app-easytier; do
-              set_package_state "$PKG" m
-            done
-
-            # Normalize the final edits and refresh OpenWrt's config stamp.
-            make defconfig -j$(nproc)
-          fi
-
       - name: Validate Minimal Configuration
         if: ${{ inputs.WRT_CONFIG == 'ZN-M2-WIFI-NO' }}
         run: |
@@ -246,7 +204,7 @@ jobs:
             exit 1
           }
 
-          for PKG in luci-app-passwall2 luci-app-openclash luci-app-easytier; do
+          for PKG in luci-app-passwall2 luci-app-openclash luci-app-easytier luci-app-partexp luci-app-upnp luci-app-diskman; do
             grep -qx "CONFIG_PACKAGE_${PKG}=m" .config || {
               echo "${PKG} must be a module, not built into the firmware"
               exit 1

@@ -1,18 +1,26 @@
 # 以 APK 为唯一运行时包管理器
 CONFIG_USE_APK=y
 
+# 不自动选择所有非共享包和内核模块，避免编译未使用的 kmod
+CONFIG_ALL=n
+CONFIG_ALL_NONSHARED=n
+CONFIG_ALL_KMODS=n
+CONFIG_DEVEL=n
+CONFIG_BUILDBOT=n
+
 # 只保留基础 LuCI；可选插件全部安装到 overlay
 CONFIG_PACKAGE_luci-app-passwall2=m
 CONFIG_PACKAGE_luci-app-openclash=m
 CONFIG_PACKAGE_luci-app-easytier=m
+CONFIG_PACKAGE_luci-app-partexp=m
+CONFIG_PACKAGE_luci-app-upnp=m
+CONFIG_PACKAGE_luci-app-diskman=m
 CONFIG_PACKAGE_luci-app-homeproxy=n
 CONFIG_PACKAGE_luci-app-autoreboot=n
 CONFIG_PACKAGE_luci-app-gecoosac=n
 CONFIG_PACKAGE_luci-app-mini-diskmanager=n
 CONFIG_PACKAGE_luci-app-natmapt=n
-CONFIG_PACKAGE_luci-app-partexp=n
 CONFIG_PACKAGE_luci-app-samba4=n
-CONFIG_PACKAGE_luci-app-upnp=n
 CONFIG_PACKAGE_luci-app-wolultra=n
 CONFIG_PACKAGE_luci-app-attendedsysupgrade=n
 CONFIG_PACKAGE_luci-app-wol=n

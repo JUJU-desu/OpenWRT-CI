@@ -58,6 +58,8 @@ UPDATE_PACKAGE "argon" "sbwml/luci-theme-argon" "openwrt-25.12" "pkg"
 UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
 UPDATE_PACKAGE "passwall2" "Openwrt-Passwall/openwrt-passwall2" "main" "pkg"
 UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
+UPDATE_PACKAGE "partexp" "sirpdboy/luci-app-partexp" "main"
+UPDATE_PACKAGE "diskman" "sbwml/luci-app-diskman" "main"
 
 #更新软件包版本
 UPDATE_VERSION() {
