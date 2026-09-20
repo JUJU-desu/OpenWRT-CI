@@ -200,8 +200,9 @@ jobs:
             set_package_state() {
               local PKG="$1"
               local STATE="$2"
-              if grep -q "^CONFIG_PACKAGE_${PKG}=" .config; then
-                sed -i "s/^CONFIG_PACKAGE_${PKG}=.*/CONFIG_PACKAGE_${PKG}=${STATE}/" .config
+              sed -i "/^CONFIG_PACKAGE_${PKG}=.*/d; /^# CONFIG_PACKAGE_${PKG} is not set$/d" .config
+              if [[ "$STATE" == "n" ]]; then
+                echo "# CONFIG_PACKAGE_${PKG} is not set" >> .config
               else
                 echo "CONFIG_PACKAGE_${PKG}=${STATE}" >> .config
               fi
@@ -249,7 +250,7 @@ jobs:
             }
           done
 
-          if grep -E '^(CONFIG_PACKAGE_(kmod-ath|kmod-ath11k|kmod-ath11k-ahb|kmod-ath11k-pci|ath11k-firmware-ipq6018|ath11k-firmware-ipq6018-ddwrt|ath11k-firmware-qcn9074|ath11k-firmware-qcn9074-ddwrt|ipq-wifi-zn_m2|wpad-openssl|kmod-usb|kmod-usb3|kmod-usb-dwc3|kmod-usb-dwc3-qcom|kmod-usb-serial-qualcomm|kmod-usb-storage|kmod-usb-storage-extras|kmod-usb-storage-uas|kmod-fs-ksmbd|luci-app-samba4|samba4-server|samba4-client|luci-app-homeproxy)=y)$' .config; then
+          if grep -E '^(CONFIG_PACKAGE_(kmod-ath|kmod-ath11k|kmod-ath11k-ahb|kmod-ath11k-pci|ath11k-firmware-ipq6018|ath11k-firmware-ipq6018-ddwrt|ath11k-firmware-qcn9074|ath11k-firmware-qcn9074-ddwrt|ipq-wifi-zn_m2|wpad-openssl|kmod-usb|kmod-usb3|kmod-usb-dwc3|kmod-usb-dwc3-qcom|kmod-usb-serial-qualcomm|kmod-usb-storage|kmod-usb-storage-extras|kmod-usb-storage-uas|kmod-fs-ksmbd|luci-app-samba4|samba4-server|samba4-client|luci-app-homeproxy)=(y|m))$' .config; then
             echo "A removed Wi-Fi, USB, Samba, or HomeProxy package is still built into the firmware"
             exit 1
           fi
