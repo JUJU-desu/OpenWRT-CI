@@ -281,6 +281,13 @@ jobs:
 
             find ./bin/targets/ -type f -exec mv -f {} ./upload/ \;
 
+            IMAGE_COUNT=$(find ./upload/ -maxdepth 1 -type f \( -iname "*.bin" -o -iname "*.ubi" -o -iname "*.itb" -o -iname "*.img" -o -iname "*.img.gz" -o -iname "*.fip" -o -iname "*.fit" \) | wc -l)
+            if [[ "$IMAGE_COUNT" -eq 0 ]]; then
+              echo "::error::No firmware image found in ./upload/"
+              find ./upload/ -maxdepth 1 -type f -printf '%f\n' | sort
+              exit 1
+            fi
+
             make clean -j$(nproc)
           fi
 
