@@ -204,7 +204,7 @@ jobs:
             exit 1
           }
 
-          for PKG in luci-app-passwall2 luci-app-openclash luci-app-easytier luci-app-partexp luci-app-upnp luci-app-diskman; do
+          for PKG in luci-app-passwall2 luci-app-easytier luci-app-partexp luci-app-upnp luci-app-diskman luci-app-nikki nikki mihomo-meta; do
             grep -qx "CONFIG_PACKAGE_${PKG}=m" .config || {
               echo "${PKG} must be a module, not built into the firmware"
               exit 1
