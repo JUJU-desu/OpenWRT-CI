@@ -8,8 +8,8 @@ CONFIG_ALL_KMODS=n
 CONFIG_DEVEL=n
 CONFIG_BUILDBOT=n
 
-# 将长期使用的插件固化进固件；只把临时测试包留给 overlay
-CONFIG_PACKAGE_luci-app-passwall2=y
+# 将长期使用的插件固化进固件；Passwall2/OpenClash 不编译
+CONFIG_PACKAGE_luci-app-passwall2=n
 CONFIG_PACKAGE_luci-app-openclash=n
 CONFIG_PACKAGE_luci-app-easytier=y
 CONFIG_PACKAGE_luci-app-partexp=y

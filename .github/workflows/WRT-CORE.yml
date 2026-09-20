@@ -204,7 +204,7 @@ jobs:
             exit 1
           }
 
-          for PKG in luci-app-passwall2 luci-app-easytier luci-app-partexp luci-app-upnp luci-app-diskman luci-app-nikki nikki mihomo-meta; do
+          for PKG in luci-app-easytier luci-app-partexp luci-app-upnp luci-app-diskman luci-app-nikki nikki mihomo-meta; do
             grep -qx "CONFIG_PACKAGE_${PKG}=y" .config || {
               echo "${PKG} must be built into the firmware"
               exit 1
@@ -311,7 +311,7 @@ jobs:
 
             内核版本：${{env.WRT_KVER}}
             插件列表：${{env.WRT_LIST}}
-            固化插件：Passwall2、EasyTier、Partexp、UPnP、Diskman、Nikki（含 mihomo-meta）
+            固化插件：EasyTier、Partexp、UPnP、Diskman、Nikki（含 mihomo-meta）
             上述插件已固化进固件；单独升级插件会在 overlay 产生覆盖文件并额外占用空间，建议随大版本固件升级。
 
   cache-rollover:

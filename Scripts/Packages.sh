@@ -55,11 +55,13 @@ UPDATE_PACKAGE() {
 UPDATE_PACKAGE "argon" "sbwml/luci-theme-argon" "openwrt-25.12" "pkg"
 
 # 准备固化进固件的插件源码；它们由配置设为 y，并随固件一起编译
-UPDATE_PACKAGE "passwall2" "Openwrt-Passwall/openwrt-passwall2" "main" "pkg"
 UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
 UPDATE_PACKAGE "partexp" "sirpdboy/luci-app-partexp" "main"
 UPDATE_PACKAGE "diskman" "sbwml/luci-app-diskman" "main"
 UPDATE_PACKAGE "nikki" "nikkinikki-org/OpenWrt-nikki" "main"
+
+# Nikki 只保留默认的 mihomo-meta 后端；同时保留两个互相冲突的后端会触发 Kconfig 递归依赖。
+rm -rf ./package/OpenWrt-nikki/mihomo-alpha
 
 #更新软件包版本
 UPDATE_VERSION() {
