@@ -54,7 +54,7 @@ UPDATE_PACKAGE() {
 # 主题
 UPDATE_PACKAGE "argon" "sbwml/luci-theme-argon" "openwrt-25.12" "pkg"
 
-# 只准备手动安装的插件源码；它们由配置设为 m，编译成 apk 但不进入固件
+# 准备固化进固件的插件源码；它们由配置设为 y，并随固件一起编译
 UPDATE_PACKAGE "passwall2" "Openwrt-Passwall/openwrt-passwall2" "main" "pkg"
 UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
 UPDATE_PACKAGE "partexp" "sirpdboy/luci-app-partexp" "main"

@@ -64,7 +64,7 @@ jobs:
       WRT_SOURCE: ${{matrix.SOURCE}}
       #插件调整
       WRT_PACKAGE: ${{inputs.PACKAGE}}
-      #手动安装插件：只编译为 apk，不固化进固件
-      WRT_MANUAL: "luci-app-passwall2 luci-app-easytier luci-app-partexp luci-app-upnp luci-app-diskman luci-app-nikki nikki mihomo-meta"
+      #长期使用的插件已固化进固件，不额外发布手动安装 APK
+      WRT_MANUAL: ""
       #仅输出配置文件
       WRT_TEST: ${{inputs.TEST || false}}

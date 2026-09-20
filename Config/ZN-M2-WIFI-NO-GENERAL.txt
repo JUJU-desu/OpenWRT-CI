@@ -8,16 +8,16 @@ CONFIG_ALL_KMODS=n
 CONFIG_DEVEL=n
 CONFIG_BUILDBOT=n
 
-# 只保留基础 LuCI；可选插件全部安装到 overlay
-CONFIG_PACKAGE_luci-app-passwall2=m
+# 将长期使用的插件固化进固件；只把临时测试包留给 overlay
+CONFIG_PACKAGE_luci-app-passwall2=y
 CONFIG_PACKAGE_luci-app-openclash=n
-CONFIG_PACKAGE_luci-app-easytier=m
-CONFIG_PACKAGE_luci-app-partexp=m
-CONFIG_PACKAGE_luci-app-upnp=m
-CONFIG_PACKAGE_luci-app-diskman=m
-CONFIG_PACKAGE_luci-app-nikki=m
-CONFIG_PACKAGE_nikki=m
-CONFIG_PACKAGE_mihomo-meta=m
+CONFIG_PACKAGE_luci-app-easytier=y
+CONFIG_PACKAGE_luci-app-partexp=y
+CONFIG_PACKAGE_luci-app-upnp=y
+CONFIG_PACKAGE_luci-app-diskman=y
+CONFIG_PACKAGE_luci-app-nikki=y
+CONFIG_PACKAGE_nikki=y
+CONFIG_PACKAGE_mihomo-meta=y
 CONFIG_PACKAGE_luci-app-homeproxy=n
 CONFIG_PACKAGE_luci-app-autoreboot=n
 CONFIG_PACKAGE_luci-app-gecoosac=n

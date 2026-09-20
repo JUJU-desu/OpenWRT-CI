@@ -205,8 +205,8 @@ jobs:
           }
 
           for PKG in luci-app-passwall2 luci-app-easytier luci-app-partexp luci-app-upnp luci-app-diskman luci-app-nikki nikki mihomo-meta; do
-            grep -qx "CONFIG_PACKAGE_${PKG}=m" .config || {
-              echo "${PKG} must be a module, not built into the firmware"
+            grep -qx "CONFIG_PACKAGE_${PKG}=y" .config || {
+              echo "${PKG} must be built into the firmware"
               exit 1
             }
           done
@@ -262,8 +262,8 @@ jobs:
             echo "WRT_KVER=$(find ./bin/targets/ -type f -name "*.manifest" -exec grep -oP '^kernel - \K[\d\.]+' {} \;)" >> $GITHUB_ENV
             echo "WRT_LIST=$(find ./bin/targets/ -type f -name "*.manifest" -exec grep -oP '^luci-(app|theme)[^ ]*' {} \; | tr '\n' ' ')" >> $GITHUB_ENV
 
-            # These packages are compiled as modules and remain outside the firmware rootfs.
-            # Copy their APK files to the release so they can be installed into overlay later.
+            # Optional module APKs can still be copied to the release when WRT_MANUAL is set.
+            # The ZN-M2 profile leaves this empty because its selected plugins are built in.
             if [[ -n "${WRT_MANUAL:-}" ]]; then
               for PKG in $WRT_MANUAL; do
                 find ./bin/packages ./bin/targets -type f -iname "*${PKG}*.apk" -exec cp -f {} ./upload/ \; 2>/dev/null || true
@@ -311,8 +311,8 @@ jobs:
 
             内核版本：${{env.WRT_KVER}}
             插件列表：${{env.WRT_LIST}}
-            手动安装插件：${{env.WRT_MANUAL}}
-            手动插件未固化进固件，请使用 apk add 安装到 overlay；更新本地包时使用 apk add --upgrade /tmp/<package>.apk，并避免使用 sysupgrade -n。
+            固化插件：Passwall2、EasyTier、Partexp、UPnP、Diskman、Nikki（含 mihomo-meta）
+            上述插件已固化进固件；单独升级插件会在 overlay 产生覆盖文件并额外占用空间，建议随大版本固件升级。
 
   cache-rollover:
     name: Roll cache generations
