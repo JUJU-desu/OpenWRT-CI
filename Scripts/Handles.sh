@@ -6,10 +6,11 @@ FEEDS_PATH="./feeds"
 PACKAGE_PATH="./package"
 
 #修改argon主题字体和颜色
-if [ -d "$PACKAGE_PATH/luci-theme-argon" ]; then
+ARGON_CONFIG="$PACKAGE_PATH/luci-app-argon-config/root/etc/config/argon"
+if [ -f "$ARGON_CONFIG" ]; then
 	echo " "
 	if sed -i "s/primary '.*'/primary '#31a1a1'/g; s/'0.2'/'0.5'/g; s/'none'/'bing'/g; s/'600'/'normal'/g" \
-		"$PACKAGE_PATH/luci-theme-argon/luci-app-argon-config/root/etc/config/argon"; then
+		"$ARGON_CONFIG"; then
 		echo "theme-argon has been fixed!"
 	else
 		echo "theme-argon fix failed; continuing!"
