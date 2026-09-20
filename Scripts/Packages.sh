@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # SPDX-License-Identifier: MIT
 # Copyright (C) 2026 VIKINGYFY
 
@@ -11,6 +12,12 @@ UPDATE_PACKAGE() {
 	local PKG_LIST=("$PKG_NAME" $5)  # 第5个参数为自定义名称列表
 	local REPO_NAME=${PKG_REPO#*/}
 	local REPO_PATH="./package/$REPO_NAME"
+	local CLONE_PATH="$REPO_PATH"
+	if [[ "$PKG_SPECIAL" == "pkg" ]]; then
+		# Keep the checkout separate from package/ so extracting a package with
+		# the same name as the repository does not delete the checkout itself.
+		CLONE_PATH="./package/.source-$REPO_NAME"
+	fi
 
 	echo " "
 
@@ -32,17 +39,23 @@ UPDATE_PACKAGE() {
 	done
 
 	# 克隆 GitHub 仓库
-	git clone --depth=1 --single-branch --branch $PKG_BRANCH "https://github.com/$PKG_REPO.git" $REPO_PATH
+	git clone --depth=1 --single-branch --branch "$PKG_BRANCH" "https://github.com/$PKG_REPO.git" "$CLONE_PATH"
 
 	# 处理克隆的仓库
 	if [[ "$PKG_SPECIAL" == "pkg" ]]; then
-		find "$REPO_PATH" -mindepth 1 -maxdepth 1 -type d -iname "*$PKG_NAME*" -print0 |
-			while IFS= read -r -d '' DIR; do
-				NAME=$(basename "$DIR")
-				rm -rf "./package/$NAME"
-				cp -rf "$DIR" "./package/$NAME"
-			done
-		rm -rf $REPO_PATH
+		local PACKAGE_COUNT=0
+		while IFS= read -r -d '' DIR; do
+			NAME=$(basename "$DIR")
+			rm -rf "./package/$NAME"
+			cp -rf "$DIR" "./package/$NAME"
+			PACKAGE_COUNT=$((PACKAGE_COUNT + 1))
+		done < <(find "$CLONE_PATH" -mindepth 1 -maxdepth 1 -type d -iname "*$PKG_NAME*" -print0)
+		if (( PACKAGE_COUNT == 0 )); then
+			echo "No package directories matching '$PKG_NAME' found in $PKG_REPO"
+			rm -rf "$CLONE_PATH"
+			return 1
+		fi
+		rm -rf "$CLONE_PATH"
 	fi
 }
 
