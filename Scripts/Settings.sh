@@ -4,8 +4,10 @@
 
 #移除luci-app-attendedsysupgrade
 sed -i "/attendedsysupgrade/d" $(find ./feeds/luci/collections/ -type f -name "Makefile")
-#修改默认主题
-sed -i "s/luci-theme-bootstrap/luci-theme-$WRT_THEME/g" $(find ./feeds/luci/collections/ -type f -name "Makefile")
+#修改默认主题；bootstrap 已经是上游默认主题，不引入额外主题包
+if [[ "$WRT_THEME" != "bootstrap" ]]; then
+	sed -i "s/luci-theme-bootstrap/luci-theme-$WRT_THEME/g" $(find ./feeds/luci/collections/ -type f -name "Makefile")
+fi
 #修改immortalwrt.lan关联IP
 sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $(find ./feeds/luci/modules/luci-mod-system/ -type f -name "flash.js")
 #添加编译日期标识
@@ -35,7 +37,9 @@ sed -i "s/hostname='.*'/hostname='$WRT_NAME'/g" $CFG_FILE
 echo "CONFIG_PACKAGE_luci=y" >> ./.config
 echo "CONFIG_LUCI_LANG_zh_Hans=y" >> ./.config
 echo "CONFIG_PACKAGE_luci-theme-$WRT_THEME=y" >> ./.config
-echo "CONFIG_PACKAGE_luci-app-$WRT_THEME-config=y" >> ./.config
+if [[ "$WRT_THEME" != "bootstrap" ]]; then
+	echo "CONFIG_PACKAGE_luci-app-$WRT_THEME-config=y" >> ./.config
+fi
 
 #引入私有扩展配置
 if [ -f "$GITHUB_WORKSPACE/Config/PRIVATE.txt" ]; then
@@ -59,6 +63,11 @@ if [[ "${WRT_TARGET^^}" == *"QUALCOMMAX"* ]]; then
 	#无WIFI配置调整Q6大小
 	if [[ "${WRT_CONFIG,,}" == *"wifi"* && "${WRT_CONFIG,,}" == *"no"* ]]; then
 		find $DTS_PATH -type f ! -iname '*nowifi*' -exec sed -i 's/ipq\(6018\|8074\).dtsi/ipq\1-nowifi.dtsi/g' {} +
+		# 设备包只提供 M2 的 board-2.bin；无 Wi-Fi 镜像不需要它
+		IMAGE_PATH="./target/linux/qualcommax/image/ipq60xx.mk"
+		if [ -f "$IMAGE_PATH" ]; then
+			sed -i '/^define Device\/zn_m2$/,/^endef$/ s/\<ipq-wifi-zn_m2\>//g' "$IMAGE_PATH"
+		fi
 		echo "qualcommax set up nowifi successfully!"
 	fi
 fi

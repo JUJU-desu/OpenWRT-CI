@@ -1,5 +1,18 @@
 # 高质量<免费>交流群
 
+# JUJU-desu / ZN M2 定制配置
+
+当前 `QCA-ALL` 只编译兆能 M2 的无 Wi-Fi 精简固件：不包含 ath11k 无线、USB 总线/存储/网络模块、Samba4 或 HomeProxy。
+
+Passwall2、OpenClash、EasyTier 使用 APK 模块包方式编译（`CONFIG_PACKAGE_*=m`），不会固化到 squashfs；构建产物中的 `.apk` 需要手动安装到 overlay，例如：
+
+```sh
+apk add /tmp/luci-app-passwall2-*.apk
+apk add --upgrade /tmp/luci-app-passwall2-*.apk
+```
+
+升级固件时不要使用 `sysupgrade -n`，否则会清空 overlay 中手动安装的插件和配置。若想清理旧版本残留，可先执行 `apk del <package>` 再安装新包。
+
 [IPQ技术讨论群](https://qm.qq.com/q/v7nMhzB4oU)
 
 # 高质量<付费>中转站
