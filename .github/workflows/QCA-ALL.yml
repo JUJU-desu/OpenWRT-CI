@@ -6,7 +6,7 @@ name: QCA-ALL
 
 #CI计划
 on:
-  #自动编译：当Auto-Clean运行完成后
+  #自动检查：当Auto-Clean运行完成后，仅在上游源码有新提交时编译
   workflow_run:
     workflows: ["Auto-Clean"]
     types:
@@ -27,10 +27,51 @@ on:
 #CI权限
 permissions: write-all
 
+concurrency:
+  group: qca-m2-upstream
+  cancel-in-progress: false
+
 #CI任务
 jobs:
+  check-upstream:
+    name: Check upstream M2 source
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{steps.check.outputs.changed}}
+      upstream_sha: ${{steps.check.outputs.upstream_sha}}
+    env:
+      GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      UPSTREAM_REPO: VIKINGYFY/immortalwrt
+      UPSTREAM_BRANCH: main
+    steps:
+      - name: Compare upstream commit
+        id: check
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          upstream_sha=$(git ls-remote "https://github.com/${UPSTREAM_REPO}.git" "refs/heads/${UPSTREAM_BRANCH}" | awk '{print $1}')
+          if [[ -z "$upstream_sha" ]]; then
+            echo "Unable to resolve upstream commit" >&2
+            exit 1
+          fi
+
+          previous_sha=$(gh variable get M2_UPSTREAM_SHA --repo "$GITHUB_REPOSITORY" --json value --jq '.value' 2>/dev/null || true)
+
+          echo "upstream_sha=$upstream_sha" >> "$GITHUB_OUTPUT"
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" || "$upstream_sha" != "$previous_sha" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "M2 source changed: ${previous_sha:-none} -> $upstream_sha"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "M2 source unchanged at $upstream_sha; skipping build"
+          fi
+
   config:
     name: ${{matrix.CONFIG}}
+    needs: check-upstream
+    if: ${{ needs.check-upstream.outputs.changed == 'true' }}
     strategy:
       fail-fast: false
       #max-parallel: 3
@@ -68,3 +109,14 @@ jobs:
       WRT_MANUAL: ""
       #仅输出配置文件
       WRT_TEST: ${{inputs.TEST || false}}
+
+  record-upstream:
+    name: Record successful M2 source
+    needs: [check-upstream, config]
+    if: ${{ needs.config.result == 'success' && needs.check-upstream.outputs.changed == 'true' && inputs.TEST != true }}
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    steps:
+      - name: Save upstream commit
+        run: gh variable set M2_UPSTREAM_SHA --repo "$GITHUB_REPOSITORY" --body "${{needs.check-upstream.outputs.upstream_sha}}"
