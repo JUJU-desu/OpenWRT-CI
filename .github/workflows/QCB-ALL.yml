@@ -6,12 +6,7 @@ name: QCB-ALL
 
 #CI计划
 on:
-  #自动编译：当Auto-Clean运行完成后
-  workflow_run:
-    workflows: ["Auto-Clean"]
-    types:
-      - completed
-  #手动编译
+  #仅保留手动编译；自动编译由 QCA-ALL 负责 M2 固件
   workflow_dispatch:
     inputs:
       PACKAGE:
